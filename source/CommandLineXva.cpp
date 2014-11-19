@@ -1,5 +1,5 @@
 //
-//
+// DESCRIPTION: Main access
 //
 
 #include "headerFiles.h"
@@ -22,12 +22,12 @@ int main(int argc, char* argv[])
 	{
 		nettingSets(i, 0) = auxNettingSets[i].c_str();
 		nettingSets(i, 1) = "Si";
-		cout <<auxNettingSets[i]<<"\n";
+		cout << auxNettingSets[i] << "\n";
 	}
 
 	cout << " Start Valorizacion \n";
-	cout << " Numero Ns: " << auxNettingSets.size()<<endl;
-	cout << " Numero St: " << stopTimes.size()<<endl;
+	cout << " Numero Ns: " << auxNettingSets.size() << endl;
+	cout << " Numero St: " << stopTimes.size() << endl;
 	aux = startValorizacion(nettingSets, stopTimes);
 	cout << aux << " Valorizacion OK \n";
 	aux = startMetricas(nettingSets);
