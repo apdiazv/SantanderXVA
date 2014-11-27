@@ -10,6 +10,8 @@ DESCRIPTION Calculus functions
 #include <string>
 #include <time.h>
 #include "Rho.h"
+
+
 /*
 #include <utility>
 
@@ -40,6 +42,7 @@ void covarianza (vector<double> sigma, matriz &rho); //matriz de covarianza
 void cholesky(matriz & sigma); //matriz de Cholesky
 vector<double> mmult(matriz sigma, vector<double> z);
 vector<double> getErroresNoCorrelacionados(size_t n);
+vector<double> getErroresNoCorrelacionados(size_t n, boost::random::mt19937 &gen);
 matriz covarianza(vector<pair <string, string>> _factoresParaSimular, map<string, double> _sigma, map<string, Rho> _rho);
 //double getNewTasa(double r0, double gamma, double theta, double newSigma);
 //double getNewFx(double S0, double domesticRate, double foreignRate, double newSigma);
