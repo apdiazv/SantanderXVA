@@ -9,7 +9,6 @@
 unsigned int cont=0;//1391523783;
 unsigned int semilla=1391523783;//(unsigned int)time(NULL);
 
-
 using namespace std;
 typedef std::vector<std::vector<double>> matriz;
 
@@ -2066,7 +2065,6 @@ double startSimulation(CellMatrix queFactores, double horizonte, unsigned long i
 	simulator->sigma(mapSigma);
 	simulator->gamma(mapGamma);
 	simulator->rho(mapRho);
-	simulator->getSeed(semilla);
 	simulator->setModels();
 	simulator->Cholesky();
 
@@ -2077,13 +2075,11 @@ double startSimulation(CellMatrix queFactores, double horizonte, unsigned long i
 	mapGamma.clear();
 	mapRho.clear();
 	//Inicializar semilla
-
 	if (cont==0)
 	{	
 		srand(semilla);
 		cont++;
 	}
-
 	//Notar que ahora runSimulacion() ya no es void si no que devuelve un vector
 	//de structs Simulador::_simulacion. Esta struct tiene la misma estructura que 
 	//una fila de la tabla de la BBDD donde se guarda la simulacion.
@@ -2759,11 +2755,11 @@ double getCurvaFromMonedaThreshold(Curva* curvaBase, string moneda)
 	string nombre;
 	if (moneda == "CLP")
 	{ 
-		nombre = "ZEROCLP";//"CLPSWPCCLC";//CLP_CAM
+		nombre = "CLPSWPCCLC";//CLP_CAM
 	}
 	else if (moneda == "USD")
 	{
-		nombre = "ZEROUSD";//"USDSWAPCLC";//USDSWAPCLC
+		nombre = "USDSWAPCLC";//USDSWAPCLC
 	}	
 	return getCurvaFromNombre(nombre, curvaBase);
 }

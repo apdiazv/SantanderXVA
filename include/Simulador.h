@@ -13,13 +13,10 @@
 #include "Curva.h"
 #include "Rho.h"
 #include "Modelo.h"
-#include <boost/random/mersenne_twister.hpp>
+
 
 using namespace std;
-
 typedef vector<vector<double>> matriz;
-typedef boost::random::mt19937 GEN;
-
 class Simulador
 {
 public:
@@ -45,11 +42,6 @@ public:
 	//vector<_simulacion> runSimulacion();
 	void runSimulacion(vector<_simulacion> &vec_sim);
 
-	void getSeed(long);
-
-
-
-
 	Simulador(double horizonte, unsigned long simulaciones, vector<pair<string, string>> factoresParaSimular);
 	Simulador(void);
 	~Simulador(void);
@@ -66,7 +58,6 @@ private:
 	map<string, Rho> _rho;
 	matriz _cholesky;
 	vector<Modelo*> _modelos;
-	GEN gen;
 
 };
 #endif

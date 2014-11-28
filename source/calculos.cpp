@@ -230,16 +230,6 @@ vector<double> getErroresNoCorrelacionados(size_t n)
 	return z;
 }
 
-vector<double> getErroresNoCorrelacionados(size_t n, boost::random::mt19937 &gen)
-{
-	vector<double> z(n);
-	for(unsigned int i = 0; i < n; i++)
-    {
-		z.at(i) = gauss(gen);
-	}
-	return z;
-}
-
 matriz covarianza(vector<pair <string, string>> _factoresParaSimular, map<string, double> _sigma, map<string, Rho> _rho)
 {
 	string auxStr;

@@ -61,7 +61,7 @@ void Simulador::Cholesky()
 
 vector<double> Simulador::getErrores()
 {
-	return mmult(_cholesky, getErroresNoCorrelacionados(_cholesky.size(), gen));
+	return mmult(_cholesky, getErroresNoCorrelacionados(_cholesky.size()));
 }
 
 void Simulador::setModels()
@@ -150,10 +150,6 @@ void Simulador::runSimulacion(vector<_simulacion> &vec_sim)
 }
 
 
-void Simulador::getSeed(long seed)
-{
-	gen.seed(seed);
-}
 
 Simulador::Simulador(double horizonte, unsigned long simulaciones, vector<pair<string, string>> factoresParaSimular)
 {
