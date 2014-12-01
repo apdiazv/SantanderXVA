@@ -31,6 +31,9 @@ typedef std::vector<std::vector<double>> matriz;
 
 using namespace std;
 
+bool isPositive(double element);
+bool isNegative(double element);
+bool isCero(double element);
 double diffclock(clock_t  clock_1, clock_t clock_2);
 string integerToString(int number);
 int  index(vector<double> data, double arg ); //return i, where data(i)<=arg

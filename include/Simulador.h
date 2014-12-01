@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <list>
 #include <map>
 #include "FxRate.h"
 #include "Curva.h"
@@ -39,8 +40,8 @@ public:
 			double tiempo;
 			double valor;
 			};
-	//vector<_simulacion> runSimulacion();
-	void runSimulacion(vector<_simulacion> &vec_sim);
+	void runSimulacion(std::list<_simulacion> &vec_sim);
+	//void runSimulacion(vector<_simulacion> &vec_sim);
 
 	Simulador(double horizonte, unsigned long simulaciones, vector<pair<string, string>> factoresParaSimular);
 	Simulador(void);

@@ -2010,6 +2010,59 @@ double insertSimulation(const vector<Simulador::_simulacion>& sim)
 	return (double)(time_1 - time_0);
 }
 
+double insertSimulation(std::list<Simulador::_simulacion>& sim)
+{
+	time_t time_0, time_1;
+	time(&time_0);
+	int rc;
+	char* errorMessage;
+	sqlite3 *db = openDb();
+	std::string qry ="DELETE FROM Simulacion";
+	rc = sqlite3_exec(db, qry.c_str(), NULL, NULL, &errorMessage);
+	rc = sqlite3_exec(db, "VACUUM", NULL, NULL, &errorMessage);
+	
+	sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, &errorMessage);
+	
+	sqlite3_stmt *stmt;
+	int filas = sim.size();
+	qry = "INSERT INTO Simulacion (factor, num_simulacion, tiempo, valor) VALUES (?, ?, ?, ?)";
+	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
+	if (rc != SQLITE_OK)
+	{
+		sqlite3_close_v2(db);
+		return 2.5;
+	}
+	//for (int i = 0; i < filas; i++)
+	for (std::list<Simulador::_simulacion>::iterator it = sim.begin(); it != sim.end(); it++)
+	{
+		
+		std::string input1 = it -> factor;
+		int input2 = it -> numSimulacion;
+		double input3 = floor(it -> tiempo * 100000000.0 + .5) / 100000000.0;
+		double input4 = it -> valor;
+
+		rc = sqlite3_bind_text(stmt, 1, input1.c_str(), -1, SQLITE_STATIC);
+		rc = sqlite3_bind_int(stmt, 2, input2);
+		rc = sqlite3_bind_double(stmt, 3, input3);
+		rc = sqlite3_bind_double(stmt, 4, input4);
+
+		rc = sqlite3_step(stmt);
+		if ((rc != SQLITE_DONE) && (rc != SQLITE_ROW))
+		{
+			sqlite3_close_v2(db);
+			return 3.0;
+		}
+		sqlite3_reset(stmt);
+	}
+	sqlite3_exec(db, "COMMIT TRANSACTION", NULL, NULL, &errorMessage);		
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	sqlite3_shutdown();
+	time(&time_1);
+
+	return (double)(time_1 - time_0);
+}
+
 
 double startSimulation(CellMatrix queFactores, double horizonte, unsigned long iteraciones)
 {
@@ -2086,12 +2139,12 @@ double startSimulation(CellMatrix queFactores, double horizonte, unsigned long i
 	//Recordar que la tabla es (factor, num_simulacion, tiempo, valor)
 	size_t auxTam = (unsigned int) (iteraciones * (horizonte * 264 + 1) * factores.size());
 	factores.clear();
-	vector<Simulador::_simulacion> vec_sim;//(iteraciones);
-	unsigned int auxx = (unsigned int) vec_sim.capacity();
+	//vector<Simulador::_simulacion> vec_sim;//(iteraciones);
+	std::list<Simulador::_simulacion> vec_sim;
 	try 
 	{
 		// vector throws a bad alloc if resized
-		vec_sim.resize(auxTam);
+		//vec_sim.resize(auxTam);
 	}
 	catch (const std::bad_alloc& bad) 
 	{
@@ -2103,15 +2156,16 @@ double startSimulation(CellMatrix queFactores, double horizonte, unsigned long i
 
 	simulator->runSimulacion(vec_sim);
 
-	if (simulator != 0)
-		delete simulator;
 
 	//Este método es el que inserta los datos en la BBDD.
 	//El doble que retorna es el tiempo que se demora en hacer la inserción.
 	//double tt = insertSimulation(sim);
 	double tt = insertSimulation(vec_sim);
 	vec_sim.clear();
-	vec_sim.swap(vector<Simulador::_simulacion> (vec_sim));
+	vec_sim.swap(std::list <Simulador::_simulacion> (vec_sim));
+
+	if (simulator != 0)
+		delete simulator;
 	//vec_sim.swap(auxSim);
 	//vec_sim.clear();
 	//vec_sim.erase( remove( vec_sim.begin(), vec_sim.end(), 0), vec_sim.end() );
@@ -2661,8 +2715,9 @@ double startMetricasDeExposicion(vector<string> nettingSets)
 		for (map<int, vector<double>>::iterator it = valor.begin(); it != valor.end(); ++it)
 		{
 			int stopTime = it->first;
-			exposures->setValor(it->second);
-			exposures->setColateral(colateral[stopTime]);
+			//exposures->setValor(it->second);
+			//exposures->setColateral(colateral[stopTime]);
+			exposures->setMtmAndColateral(it->second, colateral[stopTime]);
 			exposures->calculateExposicion();
 			exposures->claculateExposicionNegativa();
 			double auxEE = exposures->getExposicionEsperada();
@@ -2755,11 +2810,11 @@ double getCurvaFromMonedaThreshold(Curva* curvaBase, string moneda)
 	string nombre;
 	if (moneda == "CLP")
 	{ 
-		nombre = "CLPSWPCCLC";//CLP_CAM
+		nombre = "ZEROCLP";//CLP_CAM //"CLPSWPCCLC";
 	}
 	else if (moneda == "USD")
 	{
-		nombre = "USDSWAPCLC";//USDSWAPCLC
+		nombre =  "ZEROUSD";//"USDSWAPCLC";//USDSWAPCLC//
 	}	
 	return getCurvaFromNombre(nombre, curvaBase);
 }

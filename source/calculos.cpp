@@ -1,6 +1,11 @@
 #include "headerFiles.h"
 #include "calculos.h"
 
+
+bool isPositive(double element){ return ((int)element > 0); }
+bool isNegative(double element){ return ((int)element < 0); }
+bool isCero(double element){ return ((int)element == 0); }
+
 double diffclock(clock_t  clock_1, clock_t clock_2)
 {
 	double diffticks = clock_1 -clock_2;
@@ -341,9 +346,10 @@ double getProbDefaultAtStopTime(map<int, pair<double, double> > probDefault, dou
 
 		while (it != probDefault.end() && it->first != stopTime)
 		{
+			++it; // Corregido el 26/11 
 			result = result + auxProb * (it->second.first);
 			auxProb = auxProb * (1 - it->second.first);
-			++it;
+			//++it; 
 		}
 	}
 	else if (nombre == "cont")
@@ -352,9 +358,10 @@ double getProbDefaultAtStopTime(map<int, pair<double, double> > probDefault, dou
 		auxProb = (1 - it->second.second);
 		while (it != probDefault.end() && it->first != stopTime)
 		{
+			++it; 
 			result = result + auxProb * (it->second.second);
 			auxProb = auxProb * (1 - it->second.second);
-			++it;
+			//++it;
 		}
 	}
 	

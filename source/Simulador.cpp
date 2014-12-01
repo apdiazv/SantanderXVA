@@ -92,16 +92,13 @@ void Simulador::setModels()
 	return;
 }
 
-//vector<Simulador::_simulacion> Simulador::runSimulacion()
-void Simulador::runSimulacion(vector<_simulacion> &vec_sim)
+
+//void Simulador::runSimulacion(vector<_simulacion> &vec_sim)
+void Simulador::runSimulacion(std::list<_simulacion> &vec_sim)
 {
 	unsigned  nPasos = (unsigned int)ceil(_horizonte / DT) + 1;
-	//matriz simulacion;
 	vector<double> alea;
 	_simulacion temp_sim;
-	//vector<_simulacion> vec_sim;
-	//vector<double> testDiscountFactor(nPasos * _simulaciones * _factoresParaSimular.size());
-	//vector<Simulacion*> test_sim;
 	
 	for (unsigned int k = 0; k < _simulaciones; k++)
 	{
@@ -114,10 +111,8 @@ void Simulador::runSimulacion(vector<_simulacion> &vec_sim)
 			temp_sim.tiempo = 0;
 			temp_sim.valor = x;	
 			int aux_cont = j + k * (_factoresParaSimular.size() * nPasos);
-			vec_sim.at(aux_cont) = temp_sim;
-			//vec_sim.push_back(temp_sim);
-			//testDiscountFactor.at(k+j) = _modelos[j]->getDiscountFactor(0, _horizonte, x);
-			//test_sim.push_back(new Simulacion(_factoresParaSimular[j].first, k, 0, x));			
+			//vec_sim(aux_cont) = temp_sim;
+			vec_sim.push_back(temp_sim);		
 		}
 				
 		for (unsigned int i = 1; i < nPasos; i++)
@@ -130,12 +125,11 @@ void Simulador::runSimulacion(vector<_simulacion> &vec_sim)
 				temp_sim.tiempo = i;
 				temp_sim.valor = x;
 				int aux_cont = j + k * (_factoresParaSimular.size() * nPasos) + i * _factoresParaSimular.size();
-				vec_sim.at(aux_cont) = temp_sim;
-				//vec_sim.push_back(temp_sim);
+				//vec_sim.at(aux_cont) = temp_sim;
+				vec_sim.push_back(temp_sim);
 				_modelos[j]->initValue(x);
 				_modelos[j]->setInitialT(i*DT);
-				//testDiscountFactor.at(k + i * (_factoresParaSimular.size()-1)+ i + j) = _modelos[j]->getDiscountFactor(i * DT, _horizonte, x);
-				//test_sim.push_back(new Simulacion(_factoresParaSimular[j].first, k, i * DT, x));			
+					
 			}
 		}
 
