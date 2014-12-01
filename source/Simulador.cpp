@@ -51,6 +51,11 @@ Rho Simulador::getRho(string nombreRho)
 	return _rho[nombreRho];
 }
 
+void Simulador::getSeed(long seed)
+{
+	gen.seed(seed);
+}
+
 void Simulador::Cholesky()
 {
 	_cholesky = covarianza(_factoresParaSimular, _sigma, _rho);
@@ -61,7 +66,9 @@ void Simulador::Cholesky()
 
 vector<double> Simulador::getErrores()
 {
-	return mmult(_cholesky, getErroresNoCorrelacionados(_cholesky.size()));
+	//Esta linea se debe descomentar para volver a utiizar el rand de c++
+	//return mmult(_cholesky, getErroresNoCorrelacionados(_cholesky.size()));
+	return mmult(_cholesky, getErroresNoCorrelacionados(_cholesky.size(), gen));
 }
 
 void Simulador::setModels()

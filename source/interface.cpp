@@ -2119,7 +2119,15 @@ double startSimulation(CellMatrix queFactores, double horizonte, unsigned long i
 	simulator->gamma(mapGamma);
 	simulator->rho(mapRho);
 	simulator->setModels();
+	simulator->getSeed(semilla);
 	simulator->Cholesky();
+
+	//Inicializar semilla
+	if (cont==0)
+	{	
+		srand(semilla);
+		cont++;
+	}
 
 	//Liberar Memoria
 	mapFx.clear();
@@ -2127,12 +2135,8 @@ double startSimulation(CellMatrix queFactores, double horizonte, unsigned long i
 	mapSigma.clear();
 	mapGamma.clear();
 	mapRho.clear();
-	//Inicializar semilla
-	if (cont==0)
-	{	
-		srand(semilla);
-		cont++;
-	}
+
+	
 	//Notar que ahora runSimulacion() ya no es void si no que devuelve un vector
 	//de structs Simulador::_simulacion. Esta struct tiene la misma estructura que 
 	//una fila de la tabla de la BBDD donde se guarda la simulacion.

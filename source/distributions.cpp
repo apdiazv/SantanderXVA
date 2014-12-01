@@ -2,6 +2,31 @@
 #include "headerFiles.h"
 #include "distributions.h"
 
+//double cumNormalDist(double x)
+//{
+//	boost::math::normal normal; 
+//	return boost::math::cdf(normal, x);
+//}
+//
+//double invCumNormalDist(double u)
+//{ 
+//	boost::math::normal normal;
+//	return boost::math::quantile(normal, u);
+//}
+
+double uniforme(boost::random::mt19937 &gen)
+{
+	boost::random::uniform_real_distribution<> rnd(0.0, 1.0);
+	return  rnd(gen);
+}
+
+double gauss(boost::random::mt19937 &gen)
+{
+	boost::random::normal_distribution<> normal(0.0, 1.0);
+	return normal(gen);
+}
+
+
 double cumNormalDist(double x)
 {
    // Cumulative Normal Distribution
@@ -69,7 +94,6 @@ double cumNormalDist(double x)
 	return aux;
 
 }
-
 double invCumNormalDist(double u)
 { 
 	double a[]={2.50662823884, -18.61500062529, 41.39119773534, -25.44106049637};
@@ -99,6 +123,7 @@ double invCumNormalDist(double u)
 		  }
 	return r;
 }
+
 
 double uniforme()
 {
