@@ -2119,7 +2119,7 @@ double startSimulation(CellMatrix queFactores, double horizonte, unsigned long i
 	simulator->gamma(mapGamma);
 	simulator->rho(mapRho);
 	simulator->setModels();
-	simulator->getSeed(semilla);
+	simulator->getSeed(time(0));
 	simulator->Cholesky();
 
 	//Inicializar semilla
