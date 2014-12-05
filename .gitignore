@@ -1,3 +1,5 @@
 .DS_Store
 Debug/**/*
 Release/**/*
+cva_sols.ncb
+cva_sols.suo
