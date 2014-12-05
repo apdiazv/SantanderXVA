@@ -13,15 +13,6 @@ DESCRIPTION Calculus functions
 /*
 #include <utility>
 
-#include <algorithm>
-#include <cmath>
-#include <sstream>
-#include "FxRate.h"
-
-#include "distributions.h"
-#include "Curva.h"
-#include "interpola.h"
-
 */
 
 typedef std::vector<std::vector<double>> matriz;

@@ -442,18 +442,18 @@ double insertValorizacion(vector<ResultadoValorizacion> & resultados, tablas typ
 	int numSim = resultados.begin()->_mtm.size();
 	for (int i = 0; i < filas; i++)
 	{
-		string input1 = resultados[i]._netting_set;
-		string input2 = resultados[i]._deal_number;
-		double input3 = resultados[i]._time;//m2m[i][0];
+		//string input1 = resultados[i]._netting_set;
+		//string input2 = resultados[i]._deal_number;
+		//double input3 = resultados[i]._time;//m2m[i][0];
 		for(int j = 0; j < numSim; j++)
 		{
-			int input4 = j;
-			double input5 = resultados[i]._mtm[j];
-			rc = sqlite3_bind_text(stmt, 1, input1.c_str(), -1, SQLITE_STATIC);
-			rc = sqlite3_bind_text(stmt, 2, input2.c_str(), -1, SQLITE_STATIC);
-			rc = sqlite3_bind_double(stmt, 3, input3);
-			rc = sqlite3_bind_int(stmt, 4, input4);
-			rc = sqlite3_bind_double(stmt, 5, input5);
+			//int input4 = j;
+			//double input5 = resultados[i]._mtm[j];
+			rc = sqlite3_bind_text(stmt, 1, resultados[i]._netting_set.c_str(), -1, SQLITE_STATIC);
+			rc = sqlite3_bind_text(stmt, 2, resultados[i]._deal_number.c_str(), -1, SQLITE_STATIC);
+			rc = sqlite3_bind_double(stmt, 3,resultados[i]._time);
+			rc = sqlite3_bind_int(stmt, 4, j);
+			rc = sqlite3_bind_double(stmt, 5, resultados[i]._mtm[j]);
 			rc = sqlite3_step(stmt);
 			if ((rc != SQLITE_DONE) && (rc != SQLITE_ROW))
 			{
@@ -1924,21 +1924,21 @@ double insertMetrics(const vector<Metrics>& metrics)
 	}
 	for (int i = 0; i < filas; i++)
 	{
-		string input1 = metrics[i].nettingSet;
+		/*string input1 = metrics[i].nettingSet;
 		int input2 = metrics[i].stopTime;
 		double input3 = metrics[i].expExp;
 		double input4 = metrics[i].negExpExp;
 		double input5 = metrics[i].maxExp;
 		double input6 = metrics[i].potFutExp;
-		double input7 = metrics[i].expFutVal;
+		double input7 = metrics[i].expFutVal;*/
 
-		rc = sqlite3_bind_text(stmt, 1, input1.c_str(), -1, SQLITE_STATIC);
-		rc = sqlite3_bind_int(stmt, 2, input2);
-		rc = sqlite3_bind_double(stmt, 3, input3);
-		rc = sqlite3_bind_double(stmt, 4, input4);
-		rc = sqlite3_bind_double(stmt, 5, input5);
-		rc = sqlite3_bind_double(stmt, 6, input6);
-		rc = sqlite3_bind_double(stmt, 7, input7);
+		rc = sqlite3_bind_text(stmt, 1, metrics[i].nettingSet.c_str(), -1, SQLITE_STATIC);
+		rc = sqlite3_bind_int(stmt, 2, metrics[i].stopTime);
+		rc = sqlite3_bind_double(stmt, 3, metrics[i].expExp);
+		rc = sqlite3_bind_double(stmt, 4, metrics[i].negExpExp);
+		rc = sqlite3_bind_double(stmt, 5, metrics[i].maxExp);
+		rc = sqlite3_bind_double(stmt, 6, metrics[i].potFutExp);
+		rc = sqlite3_bind_double(stmt, 7, metrics[i].expFutVal);
 
 		rc = sqlite3_step(stmt);
 		if ((rc != SQLITE_DONE) && (rc != SQLITE_ROW))
@@ -2036,15 +2036,15 @@ double insertSimulation(std::list<Simulador::_simulacion>& sim)
 	for (std::list<Simulador::_simulacion>::iterator it = sim.begin(); it != sim.end(); it++)
 	{
 		
-		std::string input1 = it -> factor;
-		int input2 = it -> numSimulacion;
+		//std::string input1 = it -> factor;
+		//int input2 = it -> numSimulacion;
 		double input3 = floor(it -> tiempo * 100000000.0 + .5) / 100000000.0;
-		double input4 = it -> valor;
+		//double input4 = it -> valor;
 
-		rc = sqlite3_bind_text(stmt, 1, input1.c_str(), -1, SQLITE_STATIC);
-		rc = sqlite3_bind_int(stmt, 2, input2);
+		rc = sqlite3_bind_text(stmt, 1, it->factor.c_str(), -1, SQLITE_STATIC);
+		rc = sqlite3_bind_int(stmt, 2, it->numSimulacion);
 		rc = sqlite3_bind_double(stmt, 3, input3);
-		rc = sqlite3_bind_double(stmt, 4, input4);
+		rc = sqlite3_bind_double(stmt, 4, it->valor);
 
 		rc = sqlite3_step(stmt);
 		if ((rc != SQLITE_DONE) && (rc != SQLITE_ROW))
