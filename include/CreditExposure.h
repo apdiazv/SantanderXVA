@@ -29,6 +29,7 @@ public:
 	double getFVA( map<int, pair<double, double>> spread);
 	double getPFEMaxima();
 	double getExposicionPossitivaEsperada();
+	double getUnilateralDVA(); //NBacquet Sbecerra 20141205
 
 private:
 	map<int, vector<double>> _metricasNettingSet;
