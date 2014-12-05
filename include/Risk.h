@@ -17,6 +17,7 @@ struct Risk
 	double valueFVA;
 	double pFEMax;
 	double expPosExp;
+	double unilateralDVA;
 
 	Risk()	{	}
 	
@@ -27,7 +28,8 @@ struct Risk
 		, double _bilateralCVA
 		, double _valueFVA
 		, double _pFEMax
-		, double _expPosExp)
+		, double _expPosExp
+		, double _unilateralDVA)
 	{
 		nettingSet = _nettingSet;
 		unilateralCVA = _unilateralCVA;
@@ -37,6 +39,7 @@ struct Risk
 		valueFVA = _valueFVA;
 		pFEMax = _pFEMax;
 		expPosExp = _expPosExp;
+		unilateralDVA = _unilateralDVA;
 	}
 };
 

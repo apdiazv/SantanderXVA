@@ -1842,7 +1842,7 @@ double insertCustomAmort(CellMatrix valores)
 
 	return 4.0;
 }
-
+//Modificar
 double insertXVA(const vector<Risk>& auxRisk)
 {
 	time_t time_0, time_1;
@@ -2958,7 +2958,8 @@ double startCreditValueAdjustment(vector<string> nettingSets)
 		double valueFVA = results->getFVA(spread);
 		double valuePFEMax = results->getPFEMaxima();
 		double valueEPE = results->getExposicionPossitivaEsperada();
-		Risk tempRisk(nombreNS, unilateralCVA, valueCVA,  valueDVA, bilateralCVA, valueFVA, valuePFEMax, valueEPE);
+		double unilateralDVA = results->getUnilateralDVA();
+		Risk tempRisk(nombreNS, unilateralCVA, valueCVA,  valueDVA, bilateralCVA, valueFVA, valuePFEMax, valueEPE, unilateralDVA);
 		// Se guarda tempRisk en el vector de riesgos.
 		auxRisk.at(i) = tempRisk;
 		delete results;
