@@ -141,3 +141,23 @@ CreditExposure::~CreditExposure(void)
 	if (spline != 0)
 	delete spline;
 }
+
+double CreditExposure::getUnilateralDVA()
+{
+	double suma = 0.0;
+	int i = 0;
+	for (map<int, vector<double>>::iterator it = _metricasNettingSet.begin(); it != _metricasNettingSet.end(); ++it)
+	{
+		int StopTime = it->first;
+		string nombre = "cont" ;//first = institución, Second = Contraparte
+		//double probStopTime = getProbDefaultAtStopTime(_probDefault, StopTime, nombre);
+		double time = (double)StopTime * DT;
+		spline->getIndice(time);
+		double discFactor = exp(- spline->getRate() * time);
+		suma = (it->second[1]) *  discFactor * _probDefault[StopTime].first + suma;//getExposicionNegativaEsperada()
+		i++;
+	}
+	_valueDVA = _valueLGD.first * suma;
+	return _valueDVA;
+	
+}
