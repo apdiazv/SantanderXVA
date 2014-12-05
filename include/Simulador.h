@@ -17,7 +17,10 @@
 
 
 using namespace std;
+
 typedef vector<vector<double>> matriz;
+typedef boost::random::mt19937 GEN;
+
 class Simulador
 {
 public:
@@ -42,6 +45,8 @@ public:
 			};
 	void runSimulacion(std::list<_simulacion> &vec_sim);
 	//void runSimulacion(vector<_simulacion> &vec_sim);
+	
+	void getSeed(long);
 
 	Simulador(double horizonte, unsigned long simulaciones, vector<pair<string, string>> factoresParaSimular);
 	Simulador(void);
@@ -59,6 +64,7 @@ private:
 	map<string, Rho> _rho;
 	matriz _cholesky;
 	vector<Modelo*> _modelos;
+	GEN gen;
 
 };
 #endif
