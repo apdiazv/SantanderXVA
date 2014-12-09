@@ -1856,7 +1856,7 @@ double insertXVA(const vector<Risk>& auxRisk)
 	sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, &errorMessage);
 	sqlite3_stmt *stmt;
 	int filas = auxRisk.size();
-	qry = "INSERT INTO Xva (netting_set, unilateral_cva, value_cva, value_dva, bilateral_cva, value_fva, value_pfe_max, value_epe) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	qry = "INSERT INTO Xva (netting_set, unilateral_cva, value_cva, unilateral_dva, value_dva, bilateral_cva, value_fva, value_pfe_max, value_epe) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
 	if (rc != SQLITE_OK)
 	{
@@ -1868,11 +1868,12 @@ double insertXVA(const vector<Risk>& auxRisk)
 		string input1 = auxRisk[i].nettingSet;
 		int input2 = (int) auxRisk[i].unilateralCVA;
 		double input3 = auxRisk[i].valueCVA;
-		double input4 = auxRisk[i].valueDVA;
-		double input5 = auxRisk[i].bilateralCVA;
-		double input6 = auxRisk[i].valueFVA;
-		double input7 = auxRisk[i].pFEMax;
-		double input8 = auxRisk[i].expPosExp;
+		double input4 = auxRisk[i].unilateralDVA;
+		double input5 = auxRisk[i].valueDVA;
+		double input6 = auxRisk[i].bilateralCVA;
+		double input7 = auxRisk[i].valueFVA;
+		double input8 = auxRisk[i].pFEMax;
+		double input9 = auxRisk[i].expPosExp;
 
 		rc = sqlite3_bind_text(stmt, 1, input1.c_str(), -1, SQLITE_STATIC);
 		rc = sqlite3_bind_int(stmt, 2, input2);
@@ -1882,6 +1883,7 @@ double insertXVA(const vector<Risk>& auxRisk)
 		rc = sqlite3_bind_double(stmt, 6, input6);
 		rc = sqlite3_bind_double(stmt, 7, input7);
 		rc = sqlite3_bind_double(stmt, 8, input8);
+		rc = sqlite3_bind_double(stmt, 9, input9);
 
 		rc = sqlite3_step(stmt);
 		if ((rc != SQLITE_DONE) && (rc != SQLITE_ROW))
@@ -3059,7 +3061,7 @@ double getXvaForNettingSet(Risk& risk)
 	sqlite3 *db = openDb();
 
 	sqlite3_stmt *stmt;
-	std::string qry = "SELECT unilateral_cva, value_cva, value_dva, bilateral_cva, value_fva, value_pfe_max, value_epe FROM Xva WHERE netting_set = ?";
+	std::string qry = "SELECT unilateral_cva, value_cva, unilateral_dva, value_dva, bilateral_cva, value_fva, value_pfe_max, value_epe FROM Xva WHERE netting_set = ?";
 	string tempString(risk.nettingSet);
 	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
 	rc = sqlite3_bind_text(stmt, 1, tempString.c_str(), -1, SQLITE_STATIC);
@@ -3073,11 +3075,12 @@ double getXvaForNettingSet(Risk& risk)
 	{
 		 risk.unilateralCVA = sqlite3_column_double(stmt, 0);
 		 risk.valueCVA = sqlite3_column_double(stmt, 1);
-		 risk.valueDVA = sqlite3_column_double(stmt, 2);
-		 risk.bilateralCVA = sqlite3_column_double(stmt, 3);
-		 risk.valueFVA = sqlite3_column_double(stmt, 4);
-		 risk.pFEMax = sqlite3_column_double(stmt, 5);
-		 risk.expPosExp = sqlite3_column_double(stmt, 6);
+		 risk.unilateralDVA= sqlite3_column_double(stmt, 2);
+		 risk.valueDVA = sqlite3_column_double(stmt, 3);
+		 risk.bilateralCVA = sqlite3_column_double(stmt, 4);
+		 risk.valueFVA = sqlite3_column_double(stmt, 5);
+		 risk.pFEMax = sqlite3_column_double(stmt, 6);
+		 risk.expPosExp = sqlite3_column_double(stmt, 7);
 		 //risk.bilateralCVA = sqlite3_column_int(stmt, 3);
 		 //risk.valueFVA = sqlite3_column_int(stmt, 4);
 		 //risk.pFEMax = sqlite3_column_int(stmt, 5);
@@ -3098,8 +3101,8 @@ double getXvaForNettingSet(Risk& risk)
 
 MyMatrix getCreditExposureResults(string nombreNS)
 {
-	//Este método retorna los resultados de: Unilateral CVA, CVA, DVA, BilateralCVA, FVA  Ademas de: PFEMaxima y EPE.
-	MyMatrix result(1, 7);//result es una matriz de ceros.
+	//Este método retorna los resultados de: Unilateral CVA, CVA, Unilateral DVA,DVA, BilateralCVA, FVA  Ademas de: PFEMaxima y EPE.
+	MyMatrix result(1, 8);//result es una matriz de ceros.
 	//Risk* risk = new Risk();
 	Risk risk;
 	risk.nettingSet = nombreNS;
@@ -3110,11 +3113,12 @@ MyMatrix getCreditExposureResults(string nombreNS)
 		{
 			result(0, 0) = risk.unilateralCVA;
 			result(0, 1) = risk.valueCVA;
-			result(0, 2) = risk.valueDVA;
-			result(0, 3) = risk.bilateralCVA;
-			result(0, 4) = risk.valueFVA;
-			result(0, 5) = risk.pFEMax;
-			result(0, 6) = risk.expPosExp;
+			result(0, 2) = risk.unilateralDVA;
+			result(0, 3) = risk.valueDVA;
+			result(0, 4) = risk.bilateralCVA;
+			result(0, 5) = risk.valueFVA;
+			result(0, 6) = risk.pFEMax;
+			result(0, 7) = risk.expPosExp;
 		}
 	}
 	return result;
