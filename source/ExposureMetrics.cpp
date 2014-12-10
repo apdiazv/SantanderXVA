@@ -33,9 +33,9 @@ void ExposureMetrics::setColateral(const vector<double>& amountCollateral)
 void ExposureMetrics::setMtmAndColateral(const vector<double>& valoresNettingSet, const vector<double>& amountCollateral)
 {
 	unsigned int count_Ceros = std::count_if (valoresNettingSet.begin(), valoresNettingSet.end(), isCero);
-	if ( count_Ceros ==  valoresNettingSet.size())
+	if ( count_Ceros == valoresNettingSet.size())
 	{
-			flag = false;
+		flag = false;
 	}
 	else
 	{
@@ -47,35 +47,33 @@ void ExposureMetrics::setMtmAndColateral(const vector<double>& valoresNettingSet
 
 void ExposureMetrics::calculateExposicion()
 {
-	count = 0;
-	if(flag)
+	if (flag)
 	{
 		for (unsigned int i = 0; i < _valoresNettingSet.size(); i++)
 		{
 			_exposure.at(i) = max(_valoresNettingSet[i] - _amountCollateral[i], 0.0);
 		}
 		// cuenta el número de valores positivos
-		count = std::count_if (_exposure.begin(), _exposure.end(), isPositive);
+		//count = std::count_if (_exposure.begin(), _exposure.end(), isPositive);
 	}
 }
 
 void ExposureMetrics::claculateExposicionNegativa()
 {
-	countNeg = 0;
-	if(flag)	
+	if (flag)	
 	{
 		for (unsigned int i = 0; i < _valoresNettingSet.size(); i++)
 		{
 			_negExposure.at(i) = min(_valoresNettingSet[i] - _amountCollateral[i], 0.0);
 		}
-		countNeg = std::count_if (_negExposure.begin(), _negExposure.end(), isNegative);
+		//countNeg = std::count_if (_negExposure.begin(), _negExposure.end(), isNegative);
 	}
 }
 
 double ExposureMetrics::getValorFuturoEsperado()
 {
     double result = 0;
-	if(flag)	
+	if (flag)	
 	{
 		result = mean(_valoresNettingSet) - mean(_amountCollateral);
 	}
@@ -84,43 +82,30 @@ double ExposureMetrics::getValorFuturoEsperado()
 
 double ExposureMetrics::getExposicionEsperada()
 {
-	// double result = mean(_exposure); Corregido el 26/11/14
-	double result = 0.0;	
-	if (count > 0)
-	{ 
-		for (std::vector<double>::iterator it = _exposure.begin(); it != _exposure.end(); ++it) 
-		{
-			result += *it;
-		}
-		result = result / count;
+	double result = 0;
+	if (flag)	
+	{
+	result = mean(_exposure); //ReCorregido el 10/12/14
 	}
 	return  result;
 }
 
 double ExposureMetrics::getExposicionNegativaEsperada()
 {
-	//double result = mean(_negExposure);
 	double result = 0.0;	
-    if (countNeg > 0)
-	{ 
-		for (std::vector<double>::iterator it = _negExposure.begin(); it != _negExposure.end(); ++it) 
-		{
-			result += *it;
-		}
-		result = result / countNeg;
+    if (flag)	
+	{
+		result = mean(_negExposure);
 	}
-	 return result;
+	return result;
 }
 
 double ExposureMetrics::getExposicionPotencialFutura(double _per)
 {
 	double result = 0.0;
-	if (count > 0)
+	if (flag)	
 	{
-		vector<double> _auxExp(_exposure);
-		remove_if(_auxExp.begin(), _auxExp.end(), isCero);
-		_auxExp.resize(count);
-		result = percentil(_auxExp, _per);
+		result = percentil(_exposure, _per);
 	}
 	return result;
 }
@@ -128,7 +113,7 @@ double ExposureMetrics::getExposicionPotencialFutura(double _per)
 double ExposureMetrics::getExposicionMaxima()
 {
 	double result = 0.0;
-	if (count > 0)
+	if (flag)
 	{
 		result = *max_element(_exposure.begin(), _exposure.end());
 	}
