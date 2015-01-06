@@ -269,6 +269,18 @@ matriz covarianza(vector<pair <string, string>> _factoresParaSimular, map<string
 	return result;
 }
 
+matriz volatilidades(vector<pair <string, string>> _factoresParaSimular, map<string, double> _sigma)
+{
+	string auxStr;
+	size_t n = _factoresParaSimular.size();
+	matriz result(n, n);	
+	for (unsigned int i = 0; i < n; i++)
+	{
+		result.at(i).at(i) = _sigma[_factoresParaSimular[i].first];
+	}
+	return result;
+}
+
 double getInterpolationRate(Curva* curva, double t)
 {
    Interpola* _result = new Interpola(curva);

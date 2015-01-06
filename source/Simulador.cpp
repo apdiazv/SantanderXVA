@@ -58,9 +58,24 @@ void Simulador::getSeed(long seed)
 
 void Simulador::Cholesky()
 {
-	_cholesky = covarianza(_factoresParaSimular, _sigma, _rho);
-	//_rho.erase(_rho.begin(), _rho.end());
-	cholesky(_cholesky);
+	unsigned int ceros= 0;
+	for ( std::map<std::string, Rho>::iterator it = _rho.begin(); it!= _rho.end(); it++)
+	{
+		if(isCero(it->second.valor()))
+		ceros++;
+	}
+	
+	// Cuando las correlaciones sean todas cero calculamos la matriz de volatilidades directamente
+	if ( ceros == _rho.size())
+	{
+		_cholesky = volatilidades(_factoresParaSimular, _sigma);
+	}
+	else
+	{
+		_cholesky = covarianza(_factoresParaSimular, _sigma, _rho);
+		cholesky(_cholesky);
+	}
+
 }
 
 
