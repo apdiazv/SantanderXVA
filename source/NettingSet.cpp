@@ -25,39 +25,39 @@ NettingSet::NettingSet(string name, string thresholdCurrency, double thresholdIn
 {
 }
 
-double NettingSet::collateral(double m2m)
-{
-	//Notar que el colateral tiene el mismo signo que el m2m
-	if (m2m == 0)
-	{
-		return 0.0;
-	}
-
-	if (m2m < 0)
-	{
-		if (-m2m > _thresholdInstitution)
-		{
-			return m2m + _thresholdInstitution;
-		}
-		else
-		{
-			return 0.0;
-		}
-	}
-
-	if (m2m > 0)
-	{
-		if (m2m > _thresholdCounterparty)
-		{
-			return m2m - _thresholdCounterparty;
-		}
-		else
-		{
-			return 0.0;
-		}
-	}
-	return 0.0;
-}
+//double NettingSet::collateral(double m2m)
+//{
+//	//Notar que el colateral tiene el mismo signo que el m2m
+//	if (m2m == 0)
+//	{
+//		return 0.0;
+//	}
+//
+//	if (m2m < 0)
+//	{
+//		if (-m2m > _thresholdInstitution)
+//		{
+//			return m2m + _thresholdInstitution;
+//		}
+//		else
+//		{
+//			return 0.0;
+//		}
+//	}
+//
+//	if (m2m > 0)
+//	{
+//		if (m2m > _thresholdCounterparty)
+//		{
+//			return m2m - _thresholdCounterparty;
+//		}
+//		else
+//		{
+//			return 0.0;
+//		}
+//	}
+//	return 0.0;
+//}
 
 double NettingSet::collateralWithCSA(double m2m)
 {
@@ -140,8 +140,6 @@ void NettingSet::setPeriodicity(int periodicity)
 	_periodicity = periodicity;
 }
 
-
-
 double NettingSet::getCollateralAdjustment()
 {
 	return _collateralAdjustment;
@@ -175,4 +173,79 @@ void NettingSet::setMTA(double mta)
 		_mta = 0;
 	}
 
+}
+
+
+void NettingSet::setLastMarginDate(int time)
+{
+	_lastMarginDate = time;
+	_nextMarginDate = time + _periodicity;
+	if (_nextMarginDate < 0)
+	{
+		_nextMarginDate = 0;
+	}
+}
+void NettingSet::setInitialCollateral(double collateralAmount)
+{
+	_initialCollateralAmount = collateralAmount;
+}
+
+int NettingSet::getMarginDate(int time)
+{
+	if (_periodicity == 1 && time > 0)
+	{
+		return time - _periodicity;
+	}
+	else if (time < _periodicity) 
+	{
+		_nextMarginDate = 0;
+	}
+	else if (time > _nextMarginDate)
+	{
+		while (_nextMarginDate <= time)
+		{
+			_nextMarginDate += _periodicity;
+		}
+	}
+	else
+	{
+		int salto = 1;
+		while (salto * _periodicity <= time)
+		{
+			salto++;
+		}
+		_nextMarginDate = _lastMarginDate + salto * _periodicity;
+	}
+	return _nextMarginDate;
+}
+
+//Notar que el colateral tiene el mismo signo que el m2m
+double NettingSet::collateral(double m2m, int stopTime)
+{
+	double result = 0.0;
+
+	if (stopTime == 0)
+	{
+		result = _initialCollateralAmount;
+	}
+	else if (m2m == 0)
+	{
+		result = 0.0;
+	}
+	else if (m2m < 0)
+	{
+		if (-m2m > _thresholdInstitution)
+		{
+			result = m2m + _thresholdInstitution;
+		}
+	}
+	else if (m2m > 0)
+	{
+		if (m2m > _thresholdCounterparty)
+		{
+			result = m2m - _thresholdCounterparty;
+		}
+	}
+
+	return result;
 }
