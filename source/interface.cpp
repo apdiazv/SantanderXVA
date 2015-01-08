@@ -209,7 +209,7 @@ double insertNettingSets(CellMatrix valores)
 	sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, &errorMessage);
 	sqlite3_stmt *stmt;
 	int filas = valores.RowsInStructure();
-	std::string qry = "INSERT INTO NettingSet (nombre, recovery_rate, default_prob, threshold_curr, threshold_ns, threshold_inst, periodicity, collateral_adjustment, mta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	std::string qry = "INSERT INTO NettingSet (nombre, recovery_rate, default_prob, threshold_curr, threshold_ns, threshold_inst, last_date, initial_margin, periodicity, collateral_adjustment, mta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
 	if (rc != SQLITE_OK)
 	{
@@ -226,7 +226,9 @@ double insertNettingSets(CellMatrix valores)
 		double input6 = valores(i, 5).NumericValue();
 		int input7 = (int)valores(i, 6).NumericValue();
 		double input8 = valores(i, 7).NumericValue();
-		double input9 = valores(i, 8).NumericValue();
+		int input9 = (int)valores(i, 8).NumericValue();
+		double input10 = valores(i, 9).NumericValue();
+		double input11 = valores(i, 10).NumericValue();
 
 		rc = sqlite3_bind_text(stmt, 1, input1.c_str(), -1, SQLITE_STATIC);
 		rc = sqlite3_bind_double(stmt, 2, input2);
@@ -236,7 +238,9 @@ double insertNettingSets(CellMatrix valores)
 		rc = sqlite3_bind_double(stmt, 6, input6);
 		rc = sqlite3_bind_int(stmt, 7, input7);
 		rc = sqlite3_bind_double(stmt, 8, input8);
-		rc = sqlite3_bind_double(stmt, 9, input9);
+		rc = sqlite3_bind_int(stmt, 9, input9);
+		rc = sqlite3_bind_double(stmt, 10, input10);
+		rc = sqlite3_bind_double(stmt, 11, input11);
 
 		rc = sqlite3_step(stmt);
 		if ((rc != SQLITE_DONE) && (rc != SQLITE_ROW))

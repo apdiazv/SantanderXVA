@@ -9,7 +9,7 @@ Target Server Type    : SQLite
 Target Server Version : 30802
 File Encoding         : 65001
 
-Date: 2014-12-10 09:24:34
+Date: 2015-01-08 15:26:11
 */
 
 PRAGMA foreign_keys = OFF;
@@ -100,13 +100,20 @@ CREATE TABLE "Institution" ("id" INTEGER PRIMARY KEY  NOT NULL ,"default_prob" D
 -- Table structure for NettingSet
 -- ----------------------------
 DROP TABLE IF EXISTS "main"."NettingSet";
-CREATE TABLE "NettingSet" ("id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , "nombre" TEXT, "recovery_rate" DOUBLE, "default_prob" DOUBLE, "threshold_curr" TEXT, "threshold_ns" INTEGER, "threshold_inst" INTEGER, "periodicity" INTEGER, "collateral_adjustment" REAL DEFAULT null, "mta" REAL DEFAULT null);
-
--- ----------------------------
--- Table structure for NettingSet_old_20140924
--- ----------------------------
-DROP TABLE IF EXISTS "main"."NettingSet_old_20140924";
-CREATE TABLE "NettingSet_old_20140924" ("id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , "nombre" TEXT, "recovery_rate" DOUBLE, "default_prob" DOUBLE, "threshold_curr" TEXT, "threshold_ns" INTEGER, "threshold_inst" INTEGER, "periodicity" INTEGER);
+CREATE TABLE "NettingSet" (
+"id"  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+"nombre"  TEXT,
+"recovery_rate"  DOUBLE,
+"default_prob"  DOUBLE,
+"threshold_curr"  TEXT,
+"threshold_ns"  INTEGER,
+"threshold_inst"  INTEGER,
+"last_date"  INTEGER,
+"initial_margin"  REAL,
+"periodicity"  INTEGER,
+"collateral_adjustment"  REAL DEFAULT null,
+"mta"  REAL DEFAULT null
+);
 
 -- ----------------------------
 -- Table structure for Operacion
@@ -237,10 +244,46 @@ CREATE TABLE "Xva" (
 "netting_set"  TEXT NOT NULL,
 "unilateral_cva"  DOUBLE NOT NULL,
 "value_cva"  DOUBLE NOT NULL,
-"unilateral_dva"  DOUBLE,
+"unilateral_dva"  DOUBLE NOT NULL,
 "value_dva"  DOUBLE NOT NULL,
 "bilateral_cva"  DOUBLE NOT NULL,
 "value_fva"  DOUBLE NOT NULL,
 "value_pfe_max"  DOUBLE NOT NULL,
 "value_epe"  DOUBLE NOT NULL
 );
+
+-- ----------------------------
+-- Table structure for _NettingSet_old_20150108
+-- ----------------------------
+DROP TABLE IF EXISTS "main"."_NettingSet_old_20150108";
+CREATE TABLE "_NettingSet_old_20150108" ("id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , "nombre" TEXT, "recovery_rate" DOUBLE, "default_prob" DOUBLE, "threshold_curr" TEXT, "threshold_ns" INTEGER, "threshold_inst" INTEGER, "periodicity" INTEGER, "collateral_adjustment" REAL DEFAULT null, "mta" REAL DEFAULT null);
+
+-- ----------------------------
+-- Indexes structure for table Curva
+-- ----------------------------
+CREATE INDEX "main"."Curva-nombre"
+ON "Curva" ("nombre" ASC);
+
+-- ----------------------------
+-- Indexes structure for table DealNumberNettingSet
+-- ----------------------------
+CREATE INDEX "main"."DealNumberNettingSet-deal_number"
+ON "DealNumberNettingSet" ("netting_set" ASC);
+
+-- ----------------------------
+-- Indexes structure for table NettingSet
+-- ----------------------------
+CREATE INDEX "main"."NettingSet-nombre"
+ON "NettingSet" ("nombre" ASC);
+
+-- ----------------------------
+-- Indexes structure for table Operacion
+-- ----------------------------
+CREATE INDEX "main"."Operacion-deal_number"
+ON "Operacion" ("deal_number" ASC);
+
+-- ----------------------------
+-- Indexes structure for table Simulacion
+-- ----------------------------
+CREATE INDEX "main"."Simulaion-tiempo"
+ON "Simulacion" ("tiempo" ASC);
