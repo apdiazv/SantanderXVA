@@ -176,10 +176,10 @@ void NettingSet::setMTA(double mta)
 }
 
 
-void NettingSet::setLastMarginDate(int time)
+void NettingSet::setLastMarginDate(int lastTime)
 {
-	_lastMarginDate = time;
-	_nextMarginDate = time + _periodicity;
+	_lastMarginDate = lastTime;
+	_nextMarginDate = lastTime + _periodicity;
 	if (_nextMarginDate < 0)
 	{
 		_nextMarginDate = 0;
@@ -196,26 +196,20 @@ int NettingSet::getMarginDate(int time)
 	{
 		return time - _periodicity;
 	}
-	else if (time < _periodicity) 
+	else if (time <= _nextMarginDate) 
 	{
 		_nextMarginDate = 0;
 	}
-	else if (time > _nextMarginDate)
-	{
-		while (_nextMarginDate <= time)
-		{
-			_nextMarginDate += _periodicity;
-		}
-	}
-	else
+	else //if (time > _nextMarginDate)
 	{
 		int salto = 1;
 		while (salto * _periodicity <= time)
 		{
 			salto++;
 		}
-		_nextMarginDate = _lastMarginDate + salto * _periodicity;
+		_nextMarginDate = _lastMarginDate + (salto - 1) * _periodicity;
 	}
+
 	return _nextMarginDate;
 }
 

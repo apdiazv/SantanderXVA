@@ -482,7 +482,7 @@ double getThresholdInfoFromNettingSet(NettingSet& ns)
 	sqlite3 *db = openDb();
 
 	sqlite3_stmt *stmt;
-	std::string qry = "SELECT threshold_curr, threshold_inst, threshold_ns, periodicity FROM NettingSet WHERE nombre = ?";
+	std::string qry = "SELECT threshold_curr, threshold_inst, threshold_ns, periodicity, last_date FROM NettingSet WHERE nombre = ?";
 	string tempString(ns.getName());
 	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
 	rc = sqlite3_bind_text(stmt, 1, tempString.c_str(), -1, SQLITE_STATIC);
@@ -500,6 +500,7 @@ double getThresholdInfoFromNettingSet(NettingSet& ns)
 		ns.setThresholdInstitution(sqlite3_column_double(stmt, 1));
 		ns.setThresholdCounterparty(sqlite3_column_double(stmt, 2));
 		ns.setPeriodicity(sqlite3_column_int(stmt, 3));
+		ns.setLastMarginDate(sqlite3_column_int(stmt, 4));
 
 		sqlite3_finalize(stmt);
 		sqlite3_close(db);
@@ -2338,9 +2339,10 @@ double startValorizacion(CellMatrix nettingSets, MyArray stopTimes)
 				map<string, double> simCol;
 				NettingSet netSet(nettingSets(i, 0).StringValue(), "CLP", 0, 0, 0, 0, 0);
 				getThresholdInfoFromNettingSet(netSet);
-				int periodicity = netSet.getPeriodicity();
+				//int periodicity = netSet.getPeriodicity();
 				//collateralStopTimes.at(j)=(stopTimes[j] - periodicity);//collateralStopTimes.push_back(stopTimes[j] - periodicity);
-				int collateralStopTime = (int)(stopTimes[k] - periodicity);
+				//int collateralStopTime = (int)(stopTimes[k] - periodicity);
+				int collateralStopTime = netSet.getMarginDate(stopTimes[k]);
 				x = getSimulationAtT(collateralStopTime, simCol);
 				double r = getNettingSet(nettingSets(i, 0).StringValue(), ops); //esto trae las ops del ns
 				operaciones = ops.size();
@@ -2426,8 +2428,9 @@ double getNettingSetObjectFromName(string name, NettingSet& nettingSet)
 	int rc;
 	sqlite3 *db = openDb();
 	sqlite3_stmt *stmt;
- 
-	std::string qry = "SELECT threshold_curr, threshold_ns, threshold_inst, periodicity, collateral_adjustment, mta FROM NettingSet WHERE nombre = ?";
+    //threshold_curr, threshold_ns, threshold_inst, last_date, initial_margin, periodicity, collateral_adjustment, mta
+	std::string qry = "SELECT threshold_curr, threshold_ns, threshold_inst, periodicity, collateral_adjustment, mta, last_date, initial_margin FROM NettingSet WHERE nombre = ?";
+	  
 	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
 	rc = sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
  
@@ -2446,8 +2449,11 @@ double getNettingSetObjectFromName(string name, NettingSet& nettingSet)
 		nettingSet.setThresholdCurrency(result);
 		nettingSet.setThresholdCounterparty(sqlite3_column_double(stmt, 1));
 		nettingSet.setThresholdInstitution(sqlite3_column_double(stmt, 2));
+		nettingSet.setPeriodicity(sqlite3_column_int(stmt, 3));
 		nettingSet.setCollateralAdjustment(sqlite3_column_double(stmt, 4));
 		nettingSet.setMTA(sqlite3_column_double(stmt, 5));
+		nettingSet.setLastMarginDate(sqlite3_column_int(stmt, 6));
+		nettingSet.setInitialCollateral(sqlite3_column_double(stmt, 7));
 		sqlite3_finalize(stmt);
 		sqlite3_close(db);
 		sqlite3_shutdown();
@@ -2503,10 +2509,12 @@ double getCollateralForNettingSet(string ns, map<int, vector<double>>& collatera
 		rc = sqlite3_bind_int(stmt, 1, st[i]);
 		rc = sqlite3_bind_text(stmt, 2, ns.c_str(), -1, SQLITE_STATIC); 
 
+		int marginDate =  netSet.getMarginDate(st[i]); // Agregado para poder incorporar una garantía inicial;
+
 		while (sqlite3_step(stmt) == SQLITE_ROW)
 		{
-			//valores.push_back(netSet.collateral(sqlite3_column_double(stmt, 0))); //AQUI ADENTRO ES NUEVO
-			valores.push_back(netSet.collateralWithCSA(sqlite3_column_double(stmt, 0))); //NUEVO
+			valores.push_back(netSet.collateral(sqlite3_column_double(stmt, 0), marginDate)); //AQUI ADENTRO ES NUEVO
+			//valores.push_back(netSet.collateralWithCSA(sqlite3_column_double(stmt, 0))); //NUEVO
 			
 		}
 		collateral.insert(pair<int, vector<double>>(st[i], valores));
