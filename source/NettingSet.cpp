@@ -207,7 +207,12 @@ int NettingSet::getMarginDate(int time)
 		{
 			salto++;
 		}
-		_nextMarginDate = _lastMarginDate + (salto - 1) * _periodicity;
+		_nextMarginDate = _lastMarginDate + (salto - 1) * _periodicity; 
+
+		if (_nextMarginDate == time)
+		{
+			_nextMarginDate -= _periodicity;
+		}
 	}
 
 	return _nextMarginDate;

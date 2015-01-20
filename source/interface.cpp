@@ -2828,11 +2828,11 @@ double getCurvaFromMonedaThreshold(Curva* curvaBase, string moneda)
 	string nombre;
 	if (moneda == "CLP")
 	{ 
-		nombre = "ZEROCLP";//CLP_CAM //"CLPSWPCCLC";
+		nombre = "ZEROCLP";//"CLPSWPCCLC";//
 	}
 	else if (moneda == "USD")
 	{
-		nombre =  "ZEROUSD";//"USDSWAPCLC";//USDSWAPCLC//
+		nombre = "ZEROUSD";//"USDSWAPCLC";//
 	}	
 	return getCurvaFromNombre(nombre, curvaBase);
 }
