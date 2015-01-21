@@ -2497,8 +2497,12 @@ double getCollateralForNettingSet(string ns, map<int, vector<double>>& collatera
 	{
 		//Este query trae todas los colaterales del netting set ns para un stopping time (menos la
 		//periodicidad de valorizacion).
-		string qry = "SELECT SUM(valor) FROM Colateral WHERE tiempo = ? AND netting_set = ? GROUP BY num_simulacion" ;
-		//string qry = "SELECT SUM(valor) FROM Colateral WHERE tiempo = ? AND netting_set = ? AND num_operacion IN( select deal_number FROM Operacion WHERE bExpiryTime*264 > ?) GROUP BY num_simulacion";
+
+		//Con esta query excluimos aquellas operaciones que hoy estén vencidas del cálculo de las últimas garantías
+		//recibidas o pagadas. Esto tiene sentido para NS asociados a una cámara de compensación, pero puede no ser
+		//válido para un contrato de garantías bilaterales.
+
+		string qry = "SELECT SUM(valor) FROM Colateral WHERE tiempo = ? AND netting_set = ? AND num_operacion IN (SELECT deal_number FROM Operacion WHERE bExpiryTime*264 > ?) GROUP BY num_simulacion";
 		rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
 		if (rc != SQLITE_OK)
 		{
@@ -2507,8 +2511,9 @@ double getCollateralForNettingSet(string ns, map<int, vector<double>>& collatera
 			return 1.0;
 		}
   
-		rc = sqlite3_bind_int(stmt, 1, st[i]);
-		rc = sqlite3_bind_text(stmt, 2, ns.c_str(), -1, SQLITE_STATIC); 
+		rc = sqlite3_bind_int(stmt, 1, st[i]);								//binding para tiempo = ?
+		rc = sqlite3_bind_text(stmt, 2, ns.c_str(), -1, SQLITE_STATIC);		//binding para netting_set = ?
+		rc = sqlite3_bind_int(stmt, 3, st[i]);								//binding para bExpiryTime*264 > ?
 
 		int marginDate =  netSet.getMarginDate(st[i]); // Agregado para poder incorporar una garantía inicial;
 
