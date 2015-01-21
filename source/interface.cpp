@@ -2498,6 +2498,7 @@ double getCollateralForNettingSet(string ns, map<int, vector<double>>& collatera
 		//Este query trae todas los colaterales del netting set ns para un stopping time (menos la
 		//periodicidad de valorizacion).
 		string qry = "SELECT SUM(valor) FROM Colateral WHERE tiempo = ? AND netting_set = ? GROUP BY num_simulacion" ;
+		//string qry = "SELECT SUM(valor) FROM Colateral WHERE tiempo = ? AND netting_set = ? AND num_operacion IN( select deal_number FROM Operacion WHERE bExpiryTime*264 > ?) GROUP BY num_simulacion";
 		rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
 		if (rc != SQLITE_OK)
 		{
