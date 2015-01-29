@@ -9,7 +9,7 @@ Target Server Type    : SQLite
 Target Server Version : 30802
 File Encoding         : 65001
 
-Date: 2015-01-08 15:26:11
+Date: 2015-01-29 18:13:06
 */
 
 PRAGMA foreign_keys = OFF;
@@ -64,6 +64,16 @@ CREATE TABLE "ExposureMetrics" (
 	 "max_exposure" DOUBLE NOT NULL,
 	 "potential_future_exposure" DOUBLE NOT NULL,
 	 "expected_future_value" DOUBLE NOT NULL
+);
+
+-- ----------------------------
+-- Table structure for FactoresParaSimulacion
+-- ----------------------------
+DROP TABLE IF EXISTS "main"."FactoresParaSimulacion";
+CREATE TABLE "FactoresParaSimulacion" (
+"id"  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+"nombre"  TEXT(255) NOT NULL,
+"tipo"  TEXT(255) NOT NULL
 );
 
 -- ----------------------------
@@ -162,6 +172,16 @@ CREATE TABLE "Operacion" (
 );
 
 -- ----------------------------
+-- Table structure for ParamSimulacion
+-- ----------------------------
+DROP TABLE IF EXISTS "main"."ParamSimulacion";
+CREATE TABLE "ParamSimulacion" (
+"id"  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+"horizonte"  REAL NOT NULL,
+"num_simulaciones"  INTEGER NOT NULL
+);
+
+-- ----------------------------
 -- Table structure for ParamValorizacion
 -- ----------------------------
 DROP TABLE IF EXISTS "main"."ParamValorizacion";
@@ -253,10 +273,24 @@ CREATE TABLE "Xva" (
 );
 
 -- ----------------------------
--- Table structure for _NettingSet_old_20150108
+-- Table structure for _FactoresParaSimulacion_old_20150129
 -- ----------------------------
-DROP TABLE IF EXISTS "main"."_NettingSet_old_20150108";
-CREATE TABLE "_NettingSet_old_20150108" ("id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , "nombre" TEXT, "recovery_rate" DOUBLE, "default_prob" DOUBLE, "threshold_curr" TEXT, "threshold_ns" INTEGER, "threshold_inst" INTEGER, "periodicity" INTEGER, "collateral_adjustment" REAL DEFAULT null, "mta" REAL DEFAULT null);
+DROP TABLE IF EXISTS "main"."_FactoresParaSimulacion_old_20150129";
+CREATE TABLE "_FactoresParaSimulacion_old_20150129" (
+"id"  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+"nombre"  TEXT NOT NULL,
+"tipo"  TEXT NOT NULL
+);
+
+-- ----------------------------
+-- Table structure for _ParamSimulacion_old_20150129
+-- ----------------------------
+DROP TABLE IF EXISTS "main"."_ParamSimulacion_old_20150129";
+CREATE TABLE "_ParamSimulacion_old_20150129" (
+"id"  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+"horizonte"  INTEGER NOT NULL,
+"num_simulaciones"  INTEGER NOT NULL
+);
 
 -- ----------------------------
 -- Indexes structure for table Curva

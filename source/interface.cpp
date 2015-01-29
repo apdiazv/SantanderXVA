@@ -1805,6 +1805,40 @@ double insertInstitution(double probDefault, double recovRate, double spreadCap,
 	return 0.0;
 }
 
+double insertParamDeSimulacion(double horizonte, unsigned long numSimulaciones)
+{
+	int rc;
+	char* errorMessage;
+	sqlite3 *db = openDb();
+	string qry ="DELETE FROM ParamSimulacion";
+	rc = sqlite3_exec(db, qry.c_str(), NULL, NULL, &errorMessage);
+ 
+	sqlite3_stmt *stmt;
+	qry = "INSERT INTO ParamSimulacion (horizonte, num_simulaciones) VALUES (?, ?)";
+	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
+	if (rc != SQLITE_OK)
+	{
+		sqlite3_close_v2(db);
+		return 1.0;
+	}
+ 
+	rc = sqlite3_bind_double(stmt, 1, horizonte);
+	rc = sqlite3_bind_int(stmt, 2, numSimulaciones);
+
+	 rc = sqlite3_step(stmt);
+	if (rc != SQLITE_DONE)
+	{
+		sqlite3_close_v2(db);
+		return 2.0;
+	}
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	sqlite3_shutdown();
+ 
+	return 0.0;
+}
+
 double insertCustomAmort(CellMatrix valores)
 {
 	int rc;
@@ -2069,28 +2103,109 @@ double insertSimulation(std::list<Simulador::_simulacion>& sim)
 
 	return (double)(time_1 - time_0);
 }
+double insertQueFactores(CellMatrix queFactores)
+{
+	int rc;
+	char* errorMessage;
+	sqlite3 *db = openDb();
+	rc = sqlite3_exec(db, "DELETE FROM FactoresParaSimulacion", NULL, NULL, &errorMessage);
+	sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, &errorMessage);
+	sqlite3_stmt *stmt;
+	int filas = queFactores.RowsInStructure();
+	string qry = "INSERT INTO FactoresParaSimulacion (nombre, tipo) VALUES (?, ?)";
+	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
+	if (rc != SQLITE_OK)
+	{
+		sqlite3_close_v2(db);
+		return 2.5;
+	}
+	for (int i = 0; i < filas; i++)
+	{
+		if (queFactores(i, 2).StringValue() == "Si")
+		{
+			string input1 = queFactores(i, 0).StringValue();
+			string input2 = queFactores(i, 1).StringValue();
+			rc = sqlite3_bind_text(stmt, 1, input1.c_str(), -1, SQLITE_STATIC);
+			rc = sqlite3_bind_text(stmt, 2, input2.c_str(), -1, SQLITE_STATIC);
+			rc = sqlite3_step(stmt);
+			if ((rc != SQLITE_DONE) && (rc != SQLITE_ROW))
+			{
+				sqlite3_close_v2(db);
+				return 3.0;
+			}
+			sqlite3_reset(stmt);
+		}
+	}
 
+	sqlite3_exec(db, "COMMIT TRANSACTION", NULL, NULL, &errorMessage);		
+	sqlite3_finalize(stmt);
 
-double startSimulation(CellMatrix queFactores, double horizonte, unsigned long iteraciones)
+	sqlite3_close(db);
+	sqlite3_shutdown();
+
+	return 0.0;
+}
+
+void getParamDeSimulacion(vector<pair<string, string>>& factores, double& horizonte, unsigned long& iteraciones)
+{
+	int rc;
+	sqlite3 *db = openDb();
+	sqlite3_stmt *stmt;
+	
+	std::string qry = "SELECT horizonte, num_simulaciones FROM ParamSimulacion";
+	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
+	
+	if (rc != SQLITE_OK)
+	{
+		sqlite3_close_v2(db);
+		const char* a = sqlite3_errmsg(db);
+		throw("Error al preparar el statement Horizonte y Simulaciones");
+	}
+	
+	if (sqlite3_step(stmt) == SQLITE_ROW)
+	{
+		horizonte = sqlite3_column_double(stmt, 0);
+		iteraciones = sqlite3_column_int(stmt, 1);
+		sqlite3_finalize(stmt);
+	}
+	
+	qry = "SELECT nombre, tipo FROM FactoresParaSimulacion";
+	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
+
+	if (rc != SQLITE_OK)
+	{
+		sqlite3_close_v2(db);
+		const char* a = sqlite3_errmsg(db);
+		throw("Error al preparar el statement Factores");
+	}
+	
+	while (sqlite3_step(stmt) == SQLITE_ROW)
+	{
+		factores.push_back(std::make_pair(string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0))), 
+			                              string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)))));
+	}
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	sqlite3_shutdown();
+	//throw("Error al ejecutar la consulta Factores");	
+}
+
+double startSimulation()
 {
 	time_t time_0, time_1;
 	time(&time_0);
-	pair <string, string> factor;
+
 	vector<pair <string, string>> factores;
+	double horizonte;
+	unsigned long iteraciones;
+
 	map<string, FxRate> mapFx;
 	map<string, Curva> mapCurva;
 	map<string, double> mapSigma;
 	map<string, double> mapGamma;
 	map<string, Rho> mapRho;
-	int filas = queFactores.RowsInStructure();
-	for (int i = 0; i < filas; i++)
-	{
-		if (queFactores(i, 2).StringValue() == "Si")
-		{
-			factor = std::make_pair(queFactores(i, 0).StringValue(), queFactores(i, 1).StringValue());
-			factores.push_back(factor);
-		}
-	}
+
+	getParamDeSimulacion(factores, horizonte, iteraciones);
 
 	Simulador* simulator = new Simulador(horizonte, iteraciones, factores);
 
