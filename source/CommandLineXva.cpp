@@ -30,10 +30,16 @@ int main(int argc, char* argv[])
 	cout << " Numero St: " << stopTimes.size() << endl;
 	aux = startValorizacion(nettingSets, stopTimes);
 	cout << aux << " Valorizacion OK \n";
-	aux = startMetricas(nettingSets);
-	cout << aux << " Metricas  OK \n";
-	aux = startExposicionCrediticia(nettingSets);
-	cout << aux << " Xva Ok \n";
+	int flag;
+	cout << aux << " Desea calcular metricas y CVA: \n";
+	cin >> flag;
+	if (flag == 1)
+	{
+		aux = startMetricas(nettingSets);
+		cout << aux << " Metricas  OK \n";
+		aux = startExposicionCrediticia(nettingSets);
+		cout << aux << " Xva Ok \n";
+	}
 	cin >> pausa;
 
 	return 0;

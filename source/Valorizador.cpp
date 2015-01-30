@@ -76,10 +76,10 @@ double Valorizador::valorForward(Forward* fwd)
 {
 	Valorizador::addCurvaToStore(fwd->curvaDescuentoCompra);
 	Valorizador::addCurvaToStore(fwd->curvaDescuentoVenta);
-	double r = interpolations(Valorizador::storeCurvas[fwd->curvaDescuentoCompra].tenors, Valorizador::storeCurvas[fwd->curvaDescuentoCompra].rates, fwd->plazoResidual, 3);
-	double vpCompra = (fwd->montoCompra)/pow(1+r, fwd->plazoResidual);
-	r = interpolations(Valorizador::storeCurvas[fwd->curvaDescuentoVenta].tenors, Valorizador::storeCurvas[fwd->curvaDescuentoVenta].rates, fwd->plazoResidual, 3);
-	double vpVenta = (fwd->montoVenta)/pow(1+r, fwd->plazoResidual);
+	double r = interpolations(Valorizador::storeCurvas[fwd->curvaDescuentoCompra].tenors, Valorizador::storeCurvas[fwd->curvaDescuentoCompra].rates, fwd->plazoResidual, 2); // 2 es Clamped Spline
+	double vpCompra = (fwd->montoCompra)* exp(-r * fwd->plazoResidual);// /pow(1+r, fwd->plazoResidual);
+	r = interpolations(Valorizador::storeCurvas[fwd->curvaDescuentoVenta].tenors, Valorizador::storeCurvas[fwd->curvaDescuentoVenta].rates, fwd->plazoResidual, 2); // 2 es Clamped Spline
+	double vpVenta = (fwd->montoVenta)* exp(-r * fwd->plazoResidual);// /pow(1+r, fwd->plazoResidual);
 	return Valorizador::aMonedaBase(vpCompra, fwd->monedaCompra) - Valorizador::aMonedaBase(vpVenta, fwd->monedaVenta);
 }
 
@@ -712,8 +712,12 @@ double Valorizador::aMonedaBase(double monto, string moneda)
 		if (moneda == "EUR") { return monto * getFX("EURUSD")->valor()* getFX("USDCLP")->valor() ;}
 		if (moneda == "JPY") { return monto / getFX("USDJPY")->valor() * getFX("USDCLP")->valor(); }
 		if (moneda == "CLF") { return monto * getFX("CLFCLP")->valor(); }
-
-
+		if (moneda == "AUD") { return monto / getFX("USDAUD")->valor() * getFX("USDCLP")->valor(); }
+		if (moneda == "CAD") { return monto / getFX("USDCAD")->valor() * getFX("USDCLP")->valor(); }
+		if (moneda == "BRL") { return monto / getFX("USDBRL")->valor() * getFX("USDCLP")->valor(); }
+		if (moneda == "MXN") { return monto / getFX("USDMXN")->valor() * getFX("USDCLP")->valor(); }
+		if (moneda == "GBP") { return monto * getFX("GBPUSD")->valor() * getFX("USDCLP")->valor(); }
+		if (moneda == "CHF") { return monto * getFX("CHFUSD")->valor() * getFX("USDCLP")->valor(); }
 	}
 	else if (getMonedaBase() == "USD")
 	{
@@ -722,7 +726,12 @@ double Valorizador::aMonedaBase(double monto, string moneda)
 		if (moneda == "EUR") { return monto * getFX("EURUSD")->valor(); }
 		if (moneda == "JPY") { return monto / getFX("USDJPY")->valor(); }
 		if (moneda == "CLF") { return ( monto * getFX("CLFCLP")->valor())/ getFX("USDCLP")->valor(); }
-
+		if (moneda == "AUD") { return monto / getFX("USDAUD")->valor(); }
+		if (moneda == "CAD") { return monto / getFX("USDCAD")->valor(); }
+		if (moneda == "BRL") { return monto / getFX("USDBRL")->valor(); }
+		if (moneda == "MXN") { return monto / getFX("USDMXN")->valor(); }
+		if (moneda == "GBP") { return monto * getFX("GBPUSD")->valor(); }
+		if (moneda == "CHF") { return monto * getFX("CHFUSD")->valor(); }
 	}
 	return 1.0;
 }
