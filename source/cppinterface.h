@@ -38,6 +38,10 @@ insertCurvas(CellMatrix valores //Matriz con las curvas iniciales
 double //Inserta operaciones
 insertOperations(CellMatrix valores //Rango con todas las operaciones
 				 );
+
+double //Inserta factores a simular
+insertQueFactores(CellMatrix queFactores //Rango con los factores
+				  );
 /*
 MyArray //Trae curva
 getCurva(std::string nombre //Nombre de la curva
@@ -58,11 +62,13 @@ insertVector(CellMatrix valores //vector de valores
 
 std::string getMonedaBase();
 
+double //Inserta Horizonte y Numero de Siumulaciones
+insertParamDeSimulacion(double horizonte //Horizonte de simulación
+						, unsigned long numSimulaciones //Número de simulaciones
+						);
+
 double//Hace comenzar la simulacion
-startSimulation(CellMatrix queFactores //matriz que indica que factores hay que simular
-				, double horizonte //cuantos años hay que simular
-				, unsigned long iteraciones // cuantos caminos hay que simular
-				);
+startSimulation();
 
 MyMatrix //Devuelve un numero de simulaciones de un factor
 getSimulaciones(std::string factor //Factor elegido

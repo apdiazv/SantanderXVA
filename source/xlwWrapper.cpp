@@ -339,6 +339,55 @@ EXCEL_END
 namespace
 {
 XLRegistration::Arg
+insertQueFactoresArgs[]=
+{
+{ "queFactores","Rango con los factores ","XLF_OPER"}
+};
+  XLRegistration::XLFunctionRegistrationHelper
+registerinsertQueFactores("xlinsertQueFactores",
+"insertQueFactores",
+"Inserta factores a simular ",
+LibraryName,
+insertQueFactoresArgs,
+1
+,false
+);
+}
+
+
+
+extern "C"
+{
+LPXLFOPER EXCEL_EXPORT
+xlinsertQueFactores(
+LPXLFOPER queFactoresa)
+{
+EXCEL_BEGIN;
+
+	if (XlfExcel::Instance().IsCalledByFuncWiz())
+		return XlfOper(true);
+
+XlfOper queFactoresb(
+	(queFactoresa));
+CellMatrix queFactores(
+	queFactoresb.AsCellMatrix("queFactores"));
+
+double result(
+	insertQueFactores(
+		queFactores)
+	);
+return XlfOper(result);
+EXCEL_END
+}
+}
+
+
+
+//////////////////////////
+
+namespace
+{
+XLRegistration::Arg
 valueFwdArgs[]=
 {
 { "number","DealNumber de la operaci n ","B"}
@@ -534,11 +583,60 @@ EXCEL_END
 namespace
 {
 XLRegistration::Arg
+insertParamDeSimulacionArgs[]=
+{
+{ "horizonte","Horizonte de simulaci n ","B"},
+{ "numSimulaciones","N mero de simulaciones ","B"}
+};
+  XLRegistration::XLFunctionRegistrationHelper
+registerinsertParamDeSimulacion("xlinsertParamDeSimulacion",
+"insertParamDeSimulacion",
+"Inserta Horizonte y Numero de Siumulaciones ",
+LibraryName,
+insertParamDeSimulacionArgs,
+2
+,false
+);
+}
+
+
+
+extern "C"
+{
+LPXLFOPER EXCEL_EXPORT
+xlinsertParamDeSimulacion(
+double horizonte,
+double numSimulacionesa)
+{
+EXCEL_BEGIN;
+
+	if (XlfExcel::Instance().IsCalledByFuncWiz())
+		return XlfOper(true);
+
+
+unsigned long numSimulaciones(
+	static_cast<unsigned long>(numSimulacionesa));
+
+double result(
+	insertParamDeSimulacion(
+		horizonte,
+		numSimulaciones)
+	);
+return XlfOper(result);
+EXCEL_END
+}
+}
+
+
+
+//////////////////////////
+
+namespace
+{
+XLRegistration::Arg
 startSimulationArgs[]=
 {
-{ "queFactores","matriz que indica que factores hay que simular ","XLF_OPER"},
-{ "horizonte","cuantos a os hay que simular ","B"},
-{ "iteraciones"," cuantos caminos hay que simular ","B"}
+ { "","" } 
 };
   XLRegistration::XLFunctionRegistrationHelper
 registerstartSimulation("xlstartSimulation",
@@ -546,7 +644,7 @@ registerstartSimulation("xlstartSimulation",
 "Hace comenzar la simulacion ",
 LibraryName,
 startSimulationArgs,
-3
+0
 ,false
 );
 }
@@ -557,30 +655,15 @@ extern "C"
 {
 LPXLFOPER EXCEL_EXPORT
 xlstartSimulation(
-LPXLFOPER queFactoresa,
-double horizonte,
-double iteracionesa)
+)
 {
 EXCEL_BEGIN;
 
 	if (XlfExcel::Instance().IsCalledByFuncWiz())
 		return XlfOper(true);
 
-XlfOper queFactoresb(
-	(queFactoresa));
-CellMatrix queFactores(
-	queFactoresb.AsCellMatrix("queFactores"));
-
-
-unsigned long iteraciones(
-	static_cast<unsigned long>(iteracionesa));
-
 double result(
-	startSimulation(
-		queFactores,
-		horizonte,
-		iteraciones)
-	);
+	startSimulation());
 return XlfOper(result);
 EXCEL_END
 }
