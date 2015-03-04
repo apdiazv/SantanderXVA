@@ -200,6 +200,46 @@ double insertDealNumberNettingSet(CellMatrix valores)
 	return 0.0;
 }
 
+double insertMonedaCurva(CellMatrix valores)
+{
+	int rc;
+	char* errorMessage;
+	sqlite3 *db = openDb();
+	rc = sqlite3_exec(db, "DELETE FROM MonedaCurva", NULL, NULL, &errorMessage);
+	sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, &errorMessage);
+	sqlite3_stmt *stmt;
+	int filas = valores.RowsInStructure();
+	std::string qry = "INSERT INTO MonedaCurva (moneda, curva) VALUES (?, ?)";
+	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
+	if (rc != SQLITE_OK)
+	{
+		sqlite3_close_v2(db);
+		return 2.5;
+	}
+	for (int i = 0; i < filas; i++)
+	{
+		string input1 = valores(i, 0).StringValue();
+		string input2 = valores(i, 1).StringValue();
+		rc = sqlite3_bind_text(stmt, 1, input1.c_str(), -1, SQLITE_STATIC);
+		rc = sqlite3_bind_text(stmt, 2, input2.c_str(), -1, SQLITE_STATIC);
+
+		rc = sqlite3_step(stmt);
+		if ((rc != SQLITE_DONE) && (rc != SQLITE_ROW))
+		{
+			sqlite3_close_v2(db);
+			return 3.0;
+		}
+		sqlite3_reset(stmt);
+	}
+
+	sqlite3_exec(db, "COMMIT TRANSACTION", NULL, NULL, &errorMessage);		
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	sqlite3_shutdown();
+
+	return 0.0;
+}
+
 double insertNettingSets(CellMatrix valores)
 {
 	int rc;
@@ -2940,24 +2980,44 @@ string getMonedaThresholdForNettingSet(string ns)
 	throw("Error al ejecutar la consulta.");	
 }
 
-double getCurvaFromMonedaThreshold(Curva* curvaBase, string moneda)
+
+string getCurvaFromMoneda(string moneda)
 {
-	//Para calcular los XVA hay que usar la curva de la moneda del threshold, no la curva de 
-	//la moneda base.
-	//Esta función te está dando la curva que corresponde en duro.
-	//Despues le hacemos un arreglo adicional.
-	string nombre;
-	if (moneda == "CLP")
-	{ 
-		nombre = "ZEROCLP";//"CLPSWPCCLC";//
-	}
-	else if (moneda == "USD")
+	int rc;
+	sqlite3 *db = openDb();
+	sqlite3_stmt *stmt;
+	
+	std::string qry = "SELECT curva FROM MonedaCurva WHERE moneda = ?";
+	rc = sqlite3_prepare_v2(db, qry.c_str(), -1, &stmt, NULL);
+	rc = sqlite3_bind_text(stmt, 1, moneda.c_str(), -1, SQLITE_STATIC);
+	
+	if (rc != SQLITE_OK)
 	{
-		nombre = "ZEROUSD";//"USDSWAPCLC";//
-	}	
-	return getCurvaFromNombre(nombre, curvaBase);
+		sqlite3_close_v2(db);
+		const char* a = sqlite3_errmsg(db);
+		throw("Error al preparar el statement");
+	}
+	
+	if (sqlite3_step(stmt) == SQLITE_ROW)
+	{
+		const char* temp = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+		string result(temp);
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		sqlite3_shutdown();
+		return result;
+	}
+	
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	sqlite3_shutdown();
+	throw("Error al ejecutar la consulta.");
 }
 
+double getCurvaFromMonedaThreshold(Curva* curvaBase, string moneda)
+{
+	return getCurvaFromNombre(getCurvaFromMoneda(moneda), curvaBase);
+}
 
 double getLGDFromNettinSet(string ns, pair<double, double>& valueLGD)
 {

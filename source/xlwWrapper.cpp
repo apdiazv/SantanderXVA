@@ -784,6 +784,55 @@ EXCEL_END
 namespace
 {
 XLRegistration::Arg
+insertMonedaCurvaArgs[]=
+{
+{ "valores","Rango de valores ","XLF_OPER"}
+};
+  XLRegistration::XLFunctionRegistrationHelper
+registerinsertMonedaCurva("xlinsertMonedaCurva",
+"insertMonedaCurva",
+"Inserta la relaci n moneda-curva de descuento ",
+LibraryName,
+insertMonedaCurvaArgs,
+1
+,false
+);
+}
+
+
+
+extern "C"
+{
+LPXLFOPER EXCEL_EXPORT
+xlinsertMonedaCurva(
+LPXLFOPER valoresa)
+{
+EXCEL_BEGIN;
+
+	if (XlfExcel::Instance().IsCalledByFuncWiz())
+		return XlfOper(true);
+
+XlfOper valoresb(
+	(valoresa));
+CellMatrix valores(
+	valoresb.AsCellMatrix("valores"));
+
+double result(
+	insertMonedaCurva(
+		valores)
+	);
+return XlfOper(result);
+EXCEL_END
+}
+}
+
+
+
+//////////////////////////
+
+namespace
+{
+XLRegistration::Arg
 insertInstitutionArgs[]=
 {
 { "probDefault","Probabilidad de default ","B"},

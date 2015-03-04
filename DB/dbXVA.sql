@@ -9,7 +9,7 @@ Target Server Type    : SQLite
 Target Server Version : 30802
 File Encoding         : 65001
 
-Date: 2015-01-29 18:13:06
+Date: 2015-03-04 16:54:23
 */
 
 PRAGMA foreign_keys = OFF;
@@ -105,6 +105,16 @@ CREATE TABLE "Gamma" ("id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , "nombr
 -- ----------------------------
 DROP TABLE IF EXISTS "main"."Institution";
 CREATE TABLE "Institution" ("id" INTEGER PRIMARY KEY  NOT NULL ,"default_prob" DOUBLE NOT NULL  DEFAULT (0) ,"recovery_rate" DOUBLE NOT NULL  DEFAULT (0) , "spread_cap" DOUBLE NOT NULL  DEFAULT 0, "spread_col" DOUBLE NOT NULL  DEFAULT 0);
+
+-- ----------------------------
+-- Table structure for MonedaCurva
+-- ----------------------------
+DROP TABLE IF EXISTS "main"."MonedaCurva";
+CREATE TABLE "MonedaCurva" (
+"id"  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+"moneda"  TEXT NOT NULL,
+"curva"  TEXT NOT NULL
+);
 
 -- ----------------------------
 -- Table structure for NettingSet
@@ -280,6 +290,17 @@ CREATE TABLE "_FactoresParaSimulacion_old_20150129" (
 "id"  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 "nombre"  TEXT NOT NULL,
 "tipo"  TEXT NOT NULL
+);
+
+-- ----------------------------
+-- Table structure for _MonedaCurva_old_20150304
+-- ----------------------------
+DROP TABLE IF EXISTS "main"."_MonedaCurva_old_20150304";
+CREATE TABLE "_MonedaCurva_old_20150304" (
+"id"  INTEGER NOT NULL,
+"moneda"  TEXT NOT NULL,
+"curva"  TEXT NOT NULL,
+PRIMARY KEY ("id")
 );
 
 -- ----------------------------

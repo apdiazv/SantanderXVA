@@ -80,6 +80,10 @@ double //Inserta la relación Deal Number - Netting Set en BBDD
 insertDealNumberNettingSet(CellMatrix valores //Rango de valores
 						   );
 
+double //Inserta la relación moneda-curva de descuento
+insertMonedaCurva(CellMatrix valores //Rango de valores
+				  );
+
 double //Inserta prob. de default y tasa de recuperacion de institucion
 insertInstitution(double probDefault //Probabilidad de default
 				  , double recovRate //Tasa de recuperacion
