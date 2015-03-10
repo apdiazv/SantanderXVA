@@ -219,11 +219,6 @@ CREATE TABLE "Sigma" ("id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , "nombr
 DROP TABLE IF EXISTS "main"."Simulacion";
 CREATE TABLE "Simulacion" ("id" INTEGER PRIMARY KEY  NOT NULL ,"factor" TEXT NOT NULL ,"num_simulacion" INTEGER NOT NULL ,"tiempo" INTEGER NOT NULL  DEFAULT (null) ,"valor" DOUBLE NOT NULL );
 
--- ----------------------------
--- Table structure for sqlite_sequence
--- ----------------------------
-DROP TABLE IF EXISTS "main"."sqlite_sequence";
-CREATE TABLE sqlite_sequence(name,seq);
 
 -- ----------------------------
 -- Table structure for StopTimesParaValorizacion
